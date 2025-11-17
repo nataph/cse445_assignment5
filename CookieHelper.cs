@@ -1,47 +1,49 @@
-﻿using System;
+using System;
 using System.Web;
 
-namespace HobbyCollection
+namespace Assignment5
 {
     public static class CookieHelper
     {
-        public static void SaveUserSettings(string username, string theme, int itemsPerPage)
+        public static void SaveCollectionSummary(string username, string recentPurchase, decimal totalValue, int itemCount)
         {
             if (HttpContext.Current != null)
             {
-                HttpCookie userCookie = new HttpCookie("UserSettings");
-                userCookie["Username"] = username;
-                userCookie["ItemsPerPage"] = itemsPerPage.ToString();
-                userCookie.Expires = DateTime.Now.AddDays(30);
+                HttpCookie collectionCookie = new HttpCookie("CollectionSummary");
+                collectionCookie["Username"] = username;
+                collectionCookie["RecentPurchase"] = recentPurchase;
+                collectionCookie["TotalValue"] = totalValue.ToString();
+                collectionCookie["ItemCount"] = itemCount.ToString();
+                collectionCookie.Expires = DateTime.Now.AddDays(30);
 
-                HttpContext.Current.Response.Cookies.Add(userCookie);
+                HttpContext.Current.Response.Cookies.Add(collectionCookie);
             }
         }
 
-        public static (string username, int itemsPerPage) LoadUserSettings()
+        public static (string username, string recentPurchase, decimal totalValue, int itemCount) LoadCollectionSummary()
         {
-            if (HttpContext.Current != null && HttpContext.Current.Request.Cookies["UserSettings"] != null)
+            if (HttpContext.Current != null && HttpContext.Current.Request.Cookies["CollectionSummary"] != null)
             {
-                HttpCookie userCookie = HttpContext.Current.Request.Cookies["UserSettings"];
+                HttpCookie collectionCookie = HttpContext.Current.Request.Cookies["CollectionSummary"];
 
-                string username = userCookie["Username"] ?? "";
-                int itemsPerPage = int.TryParse(userCookie["ItemsPerPage"], out int result) ? result : 10;
+                string username = collectionCookie["Username"] ?? "";
+                string recentPurchase = collectionCookie["RecentPurchase"] ?? "";
+                decimal totalValue = decimal.TryParse(collectionCookie["TotalValue"], out decimal value) ? value : 0;
+                int itemCount = int.TryParse(collectionCookie["ItemCount"], out int count) ? count : 0;
 
-                return (username, itemsPerPage);
+                return (username, recentPurchase, totalValue, itemCount);
             }
 
-            return ("", 10);
+            return ("", "", 0, 0);
         }
 
-        public static void DeleteUserSettings()
+        public static void DeleteCollectionSummary()
         {
             if (HttpContext.Current != null)
             {
-                HttpCookie userCookie = new HttpCookie("HobbyCollectionSettings") // avoid overload here!!!!
-                {
-                    Expires = DateTime.Now.AddDays(-1)
-                };
-                HttpContext.Current.Response.Cookies.Add(userCookie);
+                HttpCookie collectionCookie = new HttpCookie("CollectionSummary");
+                collectionCookie.Expires = DateTime.Now.AddDays(-1);
+                HttpContext.Current.Response.Cookies.Add(collectionCookie);
             }
         }
     }
