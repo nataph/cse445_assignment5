@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="HobbyWebApp.ValueEstimator" CodeBehind="ValueEstimator.svc.cs" %>
